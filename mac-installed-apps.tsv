@@ -1,0 +1,15 @@
+name	bundle_id	path	size_bytes	size_human	finder_tags	last_updated	category
+1Password	com.1password.1password	/Applications/1Password.app	450000000	429.2 MB		2025-01-15	productivity
+Firefox	org.mozilla.firefox	/Applications/Firefox.app	300000000	286.1 MB		2025-03-01	essential
+Google Chrome	com.google.Chrome	/Applications/Google Chrome.app	620000000	591.3 MB		2025-03-05	essential
+Visual Studio Code	com.microsoft.VSCode	/Applications/Visual Studio Code.app	650000000	619.9 MB		2025-02-10	dev
+iTerm	com.googlecode.iterm2	/Applications/iTerm.app	120000000	114.4 MB		2024-11-20	dev
+Karabiner-Elements	org.pqrs.Karabiner-Elements	/Applications/Karabiner-Elements.app	90000000	85.8 MB		2024-12-01	dev
+Rectangle	com.knollsoft.Rectangle	/Applications/Rectangle.app	15000000	14.3 MB		2024-10-12	productivity
+Obsidian	md.obsidian	/Applications/Obsidian.app	420000000	400.5 MB		2025-02-01	productivity
+Notion	notion.id	/Applications/Notion.app	340000000	324.2 MB		2025-01-19	productivity
+Slack	com.tinyspeck.slackmacgap	/Applications/Slack.app	250000000	238.4 MB		2025-01-30	work
+Figma	com.figma.Desktop	/Applications/Figma.app	280000000	267.0 MB		2025-02-14	design
+Spotify	com.spotify.client	/Applications/Spotify.app	320000000	305.2 MB		2025-02-22	music
+IINA	com.colliderli.iina	/Applications/IINA.app	150000000	143.1 MB		2024-12-18	video
+VLC	org.videolan.vlc	/Applications/VLC.app	180000000	171.7 MB		2025-01-08	video

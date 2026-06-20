@@ -1,0 +1,21 @@
+enabled	name	path	notes
+yes	Shell zshrc	~/.zshrc	Shell config.
+yes	Shell zprofile	~/.zprofile	Shell login config.
+yes	Git config	~/.gitconfig	Git identity, aliases, and defaults. Review before sharing.
+yes	SSH config	~/.ssh/config	Host aliases only. Private keys are intentionally not listed.
+yes	Karabiner	~/.config/karabiner	Keyboard remapping config.
+yes	iTerm2 preferences	~/Library/Preferences/com.googlecode.iterm2.plist	Terminal preferences. Use iTerm2 dynamic profiles separately if configured.
+yes	Alfred app support	~/Library/Application Support/Alfred	Workflows and Alfred support files. Alfred native sync is still preferred when enabled.
+yes	Alfred preferences	~/Library/Preferences/com.runningwithcrayons.Alfred-Preferences.plist	Alfred preference plist.
+yes	BetterTouchTool app support	~/Library/Application Support/BetterTouchTool	Gestures, triggers, and presets.
+yes	BetterTouchTool preferences	~/Library/Preferences/com.hegenberg.BetterTouchTool.plist	BetterTouchTool preference plist.
+yes	BetterDisplay preferences	~/Library/Preferences/pro.betterdisplay.BetterDisplay.plist	Display utility preferences.
+yes	BatFi preferences	~/Library/Preferences/software.micropixels.BatFi.plist	Battery utility preferences.
+yes	LinearMouse config	~/.config/linearmouse	LinearMouse config folder.
+yes	LinearMouse preferences	~/Library/Preferences/com.lujjjh.LinearMouse.plist	LinearMouse preference plist.
+yes	Shottr preferences	~/Library/Preferences/cc.ffitch.shottr.plist	Screenshot app preferences.
+yes	Keka preferences	~/Library/Preferences/com.aone.keka.plist	Archive utility preferences.
+yes	CotEditor preferences	~/Library/Preferences/com.coteditor.CotEditor.plist	Editor preferences.
+yes	Obsidian app support	~/Library/Application Support/obsidian	App config and plugins. Vaults should live in their own synced folder.
+yes	Logseq app support	~/Library/Application Support/Logseq	App config. Graphs should live in their own synced folder.
+yes	Cursor user settings	~/Library/Application Support/Cursor/User	Editor settings, snippets, and keybindings.

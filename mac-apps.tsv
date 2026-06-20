@@ -1,0 +1,90 @@
+enabled	categories	method	identifier	name	url	notes
+yes	everyday	brew_cask	arc	Arc	https://arc.net/	Browser.
+yes	everyday	brew_cask	google-chrome	Google Chrome	https://www.google.com/chrome/	Browser fallback.
+yes	everyday	brew_cask	bitwarden	Bitwarden	https://bitwarden.com/	Password manager.
+yes	everyday	brew_cask	google-drive	Google Drive	https://www.google.com/drive/download/	File sync.
+yes	everyday	brew_cask	dropbox	Dropbox	https://www.dropbox.com/	File sync.
+yes	everyday	brew_cask	tailscale	Tailscale	https://tailscale.com/	Private network/VPN.
+yes	everyday	brew_cask	whatsapp	WhatsApp	https://www.whatsapp.com/download	Messaging.
+yes	everyday	brew_cask	zoom	Zoom	https://zoom.us/download	Video calls.
+yes	everyday	brew_cask	iina	IINA	https://iina.io/	Media player.
+yes	everyday,productivity	brew_cask	keka	Keka	https://www.keka.io/	Archive utility.
+yes	everyday,productivity	brew_cask	iterm2	iTerm2	https://iterm2.com/	Terminal.
+yes	productivity	brew_cask	adguard	AdGuard	https://adguard.com/	System-wide ad blocker.
+yes	productivity	brew_cask	alfred	Alfred	https://www.alfredapp.com/	Launcher and workflows.
+yes	productivity	brew_cask	anf	anf	-	Installed locally as a Homebrew cask.
+yes	productivity	brew_cask	batfi	BatFi	https://micropixels.software/apps/batfi	Battery utility.
+yes	productivity	brew_cask	betterdisplay	BetterDisplay	https://betterdisplay.pro/	Display utility.
+yes	productivity	brew_cask	bettertouchtool	BetterTouchTool	https://folivora.ai/	Automation and input customization.
+yes	productivity	brew_cask	coteditor	CotEditor	https://coteditor.com/	Text editor.
+yes	productivity	brew_cask	deepl	DeepL	https://www.deepl.com/translator/apps	Translation.
+yes	productivity	brew_cask	heynote	Heynote	https://heynote.com/	Scratchpad.
+yes	productivity	brew_cask	karabiner-elements	Karabiner-Elements	https://karabiner-elements.pqrs.org/	Keyboard remapping.
+yes	productivity	brew_cask	linearmouse	LinearMouse	https://linearmouse.app/	Mouse/trackpad tuning.
+yes	productivity	brew_cask	logseq	Logseq	https://logseq.com/	Notes.
+yes	productivity	brew_cask	macupdater	MacUpdater	https://www.corecode.io/macupdater/	App update tracking.
+yes	productivity	brew_cask	notion	Notion	https://www.notion.so/	Notes/workspace.
+yes	productivity	brew_cask	obsidian	Obsidian	https://obsidian.md/	Notes.
+yes	productivity	brew_cask	pdf-expert	PDF Expert	https://pdfexpert.com/	PDF app.
+yes	productivity	brew_cask	pearcleaner	Pearcleaner	https://github.com/alienator88/Pearcleaner	App cleanup.
+yes	productivity	brew_cask	shottr	Shottr	https://shottr.cc/	Screenshots.
+yes	productivity	brew_cask	super-productivity	Super Productivity	https://super-productivity.com/	Task planning.
+yes	productivity	brew_cask	xmind	XMind	https://xmind.app/	Mind maps.
+yes	productivity	brew_cask	yoink	Yoink	https://eternalstorms.at/yoink/mac/	Drag shelf.
+yes	productivity	mas	404009241	BBEdit	https://apps.apple.com/app/bbedit/id404009241	Text editor from App Store.
+yes	work	brew_cask	figma	Figma	https://www.figma.com/downloads/	Design.
+yes	work	brew_cask	slack	Slack	https://slack.com/downloads/mac	Team chat.
+yes	work	mas	1291898086	Toggl Track	https://apps.apple.com/app/toggl-track-hours-time-log/id1291898086	Time tracking.
+yes	work	brew_cask	loom	Loom	https://www.loom.com/	Screen recording.
+yes	work	brew_cask	spark	Spark	https://sparkmailapp.com/	Email.
+yes	work	brew_cask	canva	Canva	https://www.canva.com/download/	Design/content.
+yes	work	brew_cask	forklift	ForkLift	https://binarynights.com/	File transfer/file manager.
+yes	work	brew_cask	onlyoffice	ONLYOFFICE	https://www.onlyoffice.com/	Office suite.
+yes	work	brew_cask	libreoffice	LibreOffice	https://www.libreoffice.org/	Office suite fallback.
+yes	work	mas	1274495053	Microsoft To Do	https://apps.apple.com/app/microsoft-to-do/id1274495053	Tasks.
+yes	work	mas	1278508951	Trello	https://apps.apple.com/app/trello/id1278508951	Boards.
+yes	ai	brew_cask	anythingllm	AnythingLLM	https://anythingllm.com/	Local/private AI workspace.
+yes	ai	brew_cask	chatgpt	ChatGPT	https://openai.com/chatgpt/download/	OpenAI desktop app.
+yes	ai	brew_cask	chatgpt-atlas	ChatGPT Atlas	https://openai.com/	OpenAI browser.
+yes	ai	brew_cask	claude	Claude	https://claude.ai/download	Anthropic desktop app.
+yes	ai	brew_cask	claudebar	ClaudeBar	-	Claude menu bar utility.
+yes	ai	brew_cask	codex	Codex	https://openai.com/codex/	Coding agent.
+yes	ai	brew_cask	cursor	Cursor	https://cursor.com/	AI editor.
+yes	ai	brew_cask	google-gemini	Gemini	https://gemini.google.com/	Google AI desktop app.
+yes	ai	brew_cask	hermes	Hermes	-	Local AI client.
+yes	ai	brew_cask	lm-studio	LM Studio	https://lmstudio.ai/	Local model runner.
+yes	ai	brew_cask	ollama-app	Ollama	https://ollama.com/	Local model runner.
+yes	ai	brew_cask	openclaw	OpenClaw	https://github.com/openclaw/	AI/developer utility.
+yes	ai	manual	perplexity	Perplexity	https://www.perplexity.ai/downloads	Desktop app was installed manually on this Mac.
+yes	ai	manual	comet	Comet	https://www.perplexity.ai/comet	Perplexity browser; no standard Homebrew cask found locally.
+yes	ai	manual	pinokio	Pinokio	https://pinokio.computer/	Direct-download/account-managed installer.
+yes	ai	manual	minimax-code	MiniMax Code	https://www.minimax.io/	No standard Homebrew cask found locally.
+yes	music	brew_cask	ik-product-manager	IK Product Manager	https://www.ikmultimedia.com/products/productmanager/	IK Multimedia installer.
+yes	music	brew_cask	ilok-license-manager	iLok License Manager	https://www.ilok.com/#!license-manager	License manager.
+yes	music	brew_cask	inmusic-software-center	inMusic Software Center	https://www.inmusicbrands.com/software-centers/inmusic-software-center/	inMusic installer.
+yes	music	brew_cask	native-access	Native Access	https://www.native-instruments.com/specials/native-access-2/	Native Instruments installer.
+yes	music	brew_cask	synthesia	Synthesia	https://synthesiagame.com/	Piano learning.
+yes	music	brew_cask	waves-central	Waves Central	https://www.waves.com/downloads/central	Waves installer.
+yes	music	mas	634148309	Logic Pro	https://apps.apple.com/app/logic-pro/id634148309	DAW.
+yes	music	mas	634159523	MainStage	https://apps.apple.com/app/mainstage/id634159523	Live rig.
+yes	music	mas	424390742	Compressor	https://apps.apple.com/app/compressor/id424390742	Apple media tool.
+yes	music	mas	1580214821	Chordio	https://apps.apple.com/app/chordio/id1580214821	Music theory.
+yes	music	mas	1207828889	Loopman	https://apps.apple.com/app/loopman/id1207828889	Music practice.
+yes	music	mas	1514225088	MIDI Player	https://apps.apple.com/app/midi-player/id1514225088	MIDI playback.
+yes	music	mas	824450766	MIDI To MP3	https://apps.apple.com/app/midi-to-mp3/id824450766	MIDI conversion.
+yes	music	mas	421739418	MIDITrail	https://apps.apple.com/app/miditrail/id421739418	MIDI visualizer.
+yes	music	mas	1459790045	QuickMIDI	https://apps.apple.com/app/quickmidi/id1459790045	MIDI utility.
+yes	music	mas	6745803127	Tessitura Pro Scales	https://apps.apple.com/app/tessitura-pro-scales/id6745803127	Scales practice.
+yes	music	manual	xln-online-installer	XLN Online Installer	https://www.xlnaudio.com/install	No standard Homebrew cask found locally.
+yes	music	manual	refx-cloud	reFX Cloud	https://refx.com/cloud/	Vendor cloud installer.
+yes	music	manual	syntorial	Syntorial	https://www.syntorial.com/	Paid app/license login likely required.
+yes	music	manual	anthemscore	AnthemScore	https://www.lunaverus.com/	Paid app/license login likely required.
+yes	music	manual	earmaster	EarMaster	https://www.earmaster.com/	Paid app/license login likely required.
+yes	music	manual	sforzando	sforzando	https://www.plogue.com/products/sforzando.html	Vendor download.
+yes	games	brew_cask	minecraft	Minecraft	https://www.minecraft.net/	Game launcher.
+yes	games	brew_cask	openemu	OpenEmu	https://openemu.org/	Emulator frontend.
+yes	games	brew_cask	ppsspp	PPSSPP	https://www.ppsspp.org/	PSP emulator.
+yes	games	brew_cask	prismlauncher	Prism Launcher	https://prismlauncher.org/	Minecraft launcher.
+yes	games	brew_cask	steam	Steam	https://store.steampowered.com/about/	Game launcher.
+yes	games	manual	ryujinx	Ryujinx	-	No standard Homebrew cask found locally; restore only if you still use a trusted installer.
+yes	games	manual	crystalrcm	CrystalRCM	-	No standard Homebrew cask found locally; restore only if you still use it.
