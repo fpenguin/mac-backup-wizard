@@ -46,7 +46,10 @@ Maintenance:  8 Change backup location   9 Remove settings backups
   load disabled-by-default. Mackup-supported apps are deferred. The scan writes
   the machine-local `mac-settings.generated.tsv` (schema:
   `enabled name path notes source bundle_id kind verified size_bytes size_human`), with
-  `mac-settings.tsv` merged in as a curated overlay.
+  `mac-settings.tsv` merged in as a curated overlay. Restore (option 4) loads the
+  manifest from the chosen backup (`selected-settings.tsv`, written at backup
+  time) via `restore_source_manifest`, not the local manifest, so every backed-up
+  item is offered even when its app is not installed on this Mac.
 - **Matching is exact bundle id** (with a name fallback only for rows that have
   no bundle id, e.g. dotfiles). The settings picker (`mac-settings-picker.py`)
   always opens, pre-seeded by an optional app pre-selection, so dotfiles and

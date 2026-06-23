@@ -51,6 +51,12 @@ disabled/unverified if missing, so a wrong path can never be backed up.
 The settings backup destination is shown in the Catalogs header as `Backup:` and
 can be any cloud or local folder (see [Backup Location](#backup-location)).
 
+**Restoring on a new Mac.** Restore (option `4`) reads the list of what to restore
+from the backup itself (the `selected-settings.tsv` saved at backup time), not
+from whatever is installed on the new Mac. So it offers **everything you backed
+up**, regardless of whether each app is installed yet — install the apps first
+(option `3`) or restore settings now and install later, in any order.
+
 Option `8` lets you point the settings backup at iCloud Drive, Dropbox, OneDrive,
 Google Drive (auto-detected under `~/Library/CloudStorage`), or a custom path.
 

@@ -265,6 +265,26 @@ else
   ok "bundle match: skipped (no python3 / example catalog)"
 fi
 
+# --- restore offers all backed-up items, not just locally-installed ones ---
+rdir="$(mktemp -d)"
+mkdir -p "$rdir/files"
+{
+  printf 'enabled\tname\tpath\tnotes\tsource\tbundle_id\tkind\tverified\tsize_bytes\tsize_human\n'
+  printf 'yes\tGhost (not installed)\t~/Library/Preferences/com.example.ghost.plist\t\tfs\tcom.example.ghost\tpref\tyes\t1024\t1 KB\n'
+} >"$rdir/selected-settings.tsv"
+[[ "$(restore_source_manifest "$rdir")" == "$rdir/selected-settings.tsv" ]] \
+  && ok "restore: uses the backup's own selected-settings.tsv" \
+  || bad "restore: wrong manifest source"
+load_settings_items "$(restore_source_manifest "$rdir")"
+restore_found=0
+for ((i = 1; i <= SETTING_COUNT; i++)); do
+  [[ "${SETTING_PATH[i]}" == "~/Library/Preferences/com.example.ghost.plist" ]] && restore_found=1
+done
+[[ "$restore_found" -eq 1 ]] \
+  && ok "restore: offers a backed-up item whose app is not installed" \
+  || bad "restore: dropped a backed-up item (count=$SETTING_COUNT)"
+rm -rf "$rdir"
+
 printf '\n'
 if [[ "$fails" -eq 0 ]]; then
   printf 'ALL BASH TESTS PASSED\n'

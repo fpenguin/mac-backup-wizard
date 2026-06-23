@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Mac Backup Wizard — OpenBoot-style setup/backup wizard.
-# Version: 1.2
+# Version: 1.3
 
 set -o pipefail
 
@@ -1756,12 +1756,13 @@ scan_settings_manifest() {
 }
 
 load_settings_items() {
+  # Optional arg: explicit manifest path (e.g. a backup's selected-settings.tsv).
+  # Defaults to the local active manifest, used by the backup/scan flows.
+  local manifest="${1:-$(active_settings_manifest)}"
   local enabled name path notes source bundle_id kind verified size_bytes size_human
   local line_number=0
-  local manifest
 
   reset_settings_items
-  manifest="$(active_settings_manifest)"
   [[ -f "$manifest" ]] || return 0
 
   while IFS=$'\t' read -r enabled name path notes source bundle_id kind verified size_bytes size_human || [[ -n "$enabled" ]]; do
@@ -2374,14 +2375,18 @@ write_selected_settings_manifest() {
   }
 
   mkdir -p "$dir" || return 1
+  # Full schema so restore can load this directly (matches load_settings_items).
   {
-    printf 'enabled\tname\tpath\tnotes\tsize_bytes\tsize_human\n'
+    printf 'enabled\tname\tpath\tnotes\tsource\tbundle_id\tkind\tverified\tsize_bytes\tsize_human\n'
     for ((index = 1; index <= SETTING_COUNT; index++)); do
       [[ "${SETTING_SELECTED[index]}" == "1" ]] || continue
-      printf 'yes\t%s\t%s\t%s\t%s\t%s\n' \
+      printf 'yes\t%s\t%s\t%s\t%s\t%s\t%s\tyes\t%s\t%s\n' \
         "${SETTING_NAME[index]}" \
         "${SETTING_PATH[index]}" \
         "${SETTING_NOTES[index]}" \
+        "${SETTING_SOURCE[index]}" \
+        "${SETTING_BUNDLE_ID[index]}" \
+        "${SETTING_KIND[index]}" \
         "${SETTING_SIZE_BYTES[index]:-0}" \
         "$(human_size_bytes "${SETTING_SIZE_BYTES[index]:-0}")"
     done
@@ -2633,6 +2638,20 @@ backup_settings_flow() {
   fi
 }
 
+restore_source_manifest() {
+  # Prefer the manifest saved inside the backup (the list of what was actually
+  # backed up) so restore offers every backed-up item regardless of what is
+  # installed on this Mac. Fall back to older backups, then the local manifest.
+  local dir="$1"
+  if [[ -f "$dir/selected-settings.tsv" ]]; then
+    printf '%s' "$dir/selected-settings.tsv"
+  elif [[ -f "$dir/manifest.tsv" ]]; then
+    printf '%s' "$dir/manifest.tsv"
+  else
+    printf '%s' "$(active_settings_manifest)"
+  fi
+}
+
 restore_settings_flow() {
   local dir
 
@@ -2643,7 +2662,9 @@ restore_settings_flow() {
   dir="$(backup_dir)"
   printf 'Restore source: %s\n' "$dir"
 
-  load_settings_items
+  # Restore from the backup's own manifest, not the local one, so every backed-up
+  # item is offered even when the matching app is not installed on this Mac.
+  load_settings_items "$(restore_source_manifest "$dir")"
   review_settings_selection restore || return 0
 
   if confirm "Restore selected settings to this Mac?"; then
