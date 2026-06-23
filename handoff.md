@@ -38,7 +38,13 @@ Maintenance:  8 Change backup location   9 Remove settings backups
   runs in a worker thread while curses redraws an indeterminate progress bar with
   elapsed time and timeout values.
 - **App install (option 3)** maps defined apps to `mac-apps.tsv` (normalized
-  name/identifier match) and builds a Homebrew/mas/manual plan.
+  name/identifier match) and builds a Homebrew/mas/manual plan. Apps with no
+  catalog entry fall back to the inventory's `cask` / `mas_id` columns
+  (synthetic install items), so uncataloged apps still install. Those columns are
+  filled at scan time by `resolve_install_sources` in `mac-installed-apps.py`
+  from `brew info --json=v2 --installed` and `mas list` (blanks only; never
+  overwrites). Inventory schema gained `mas_id` and `cask` (appended last;
+  `load_defined_apps` reads them).
 - **Settings (options 2/4)** are discovered by `mac-settings-scan.py`: for each
   app it observes the filesystem keyed by bundle id (preference plists,
   Application Support, sandbox Containers), plus dotfiles and `~/.config`. Only

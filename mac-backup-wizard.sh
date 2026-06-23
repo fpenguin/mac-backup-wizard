@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Mac Backup Wizard — OpenBoot-style setup/backup wizard.
-# Version: 1.3
+# Version: 1.4
 
 set -o pipefail
 
@@ -92,6 +92,8 @@ DEFINED_APP_NAME=()
 DEFINED_APP_BUNDLE_ID=()
 DEFINED_APP_PATH=()
 DEFINED_APP_CATEGORY=()
+DEFINED_APP_MAS=()
+DEFINED_APP_CASK=()
 SELECTED_DEFINED_APP_PATHS=()
 UNMATCHED_DEFINED_APPS=()
 
@@ -599,12 +601,12 @@ reset_defined_apps() {
 }
 
 load_defined_apps() {
-  local name bundle_id path size_bytes size_human finder_tags last_updated category
+  local name bundle_id path size_bytes size_human finder_tags last_updated category mas_id cask
   local line_number=0
 
   reset_defined_apps
 
-  while IFS=$'\t' read -r name bundle_id path size_bytes size_human finder_tags last_updated category || [[ -n "$name" ]]; do
+  while IFS=$'\t' read -r name bundle_id path size_bytes size_human finder_tags last_updated category mas_id cask || [[ -n "$name" ]]; do
     line_number=$((line_number + 1))
     [[ "$line_number" -eq 1 && "$name" == "name" ]] && continue
     [[ -z "$name" || -z "$path" ]] && continue
@@ -614,6 +616,8 @@ load_defined_apps() {
     DEFINED_APP_BUNDLE_ID[DEFINED_APP_COUNT]="$(trim_spaces "$bundle_id")"
     DEFINED_APP_PATH[DEFINED_APP_COUNT]="$(trim_spaces "$path")"
     DEFINED_APP_CATEGORY[DEFINED_APP_COUNT]="$(trim_spaces "$category")"
+    DEFINED_APP_MAS[DEFINED_APP_COUNT]="$(trim_spaces "$mas_id")"
+    DEFINED_APP_CASK[DEFINED_APP_COUNT]="$(trim_spaces "$cask")"
   done <"$INSTALLED_APPS_CATALOG"
 }
 
@@ -693,6 +697,16 @@ defined_app_name_for_path() {
   fi
 
   printf '%s' "$path"
+}
+
+defined_app_cask_for_path() {
+  local index
+  index="$(defined_app_index_for_path "$1")" && printf '%s' "${DEFINED_APP_CASK[index]}"
+}
+
+defined_app_mas_for_path() {
+  local index
+  index="$(defined_app_index_for_path "$1")" && printf '%s' "${DEFINED_APP_MAS[index]}"
 }
 
 choose_defined_apps() {
@@ -913,6 +927,28 @@ add_manual() {
   MANUAL_APPS+=("$entry")
 }
 
+# Append an install item resolved from the inventory (cask/mas columns) for an
+# app that has no curated catalog entry, and mark it selected so it joins the plan.
+add_synthetic_install_item() {
+  local method="$1" identifier="$2" name="$3"
+  local key="${method}|${identifier}"
+  local index
+
+  for ((index = 1; index <= ITEM_COUNT; index++)); do
+    [[ "${ITEM_KEY[index]}" == "$key" ]] && { ITEM_SELECTED[index]=1; return 0; }
+  done
+
+  ITEM_COUNT=$((ITEM_COUNT + 1))
+  ITEM_KEY[ITEM_COUNT]="$key"
+  ITEM_METHOD[ITEM_COUNT]="$method"
+  ITEM_IDENTIFIER[ITEM_COUNT]="$identifier"
+  ITEM_NAME[ITEM_COUNT]="$name"
+  ITEM_URL[ITEM_COUNT]=""
+  ITEM_NOTES[ITEM_COUNT]="from inventory"
+  ITEM_CATEGORIES[ITEM_COUNT]=""
+  ITEM_SELECTED[ITEM_COUNT]=1
+}
+
 build_install_plan() {
   local index method identifier name url notes
 
@@ -958,7 +994,20 @@ select_install_items_for_defined_apps() {
       fi
     done
 
-    $matched || add_unmatched_defined_app "$app_name"
+    # Curated catalog wins. Otherwise fall back to install info captured in the
+    # inventory (Homebrew cask, then App Store id) so "missing" apps still install.
+    if ! $matched; then
+      local app_cask app_mas
+      app_cask="$(defined_app_cask_for_path "$selected_path")"
+      app_mas="$(defined_app_mas_for_path "$selected_path")"
+      if [[ -n "$app_cask" ]]; then
+        add_synthetic_install_item brew_cask "$app_cask" "$app_name"
+      elif [[ -n "$app_mas" ]]; then
+        add_synthetic_install_item mas "$app_mas" "$app_name"
+      else
+        add_unmatched_defined_app "$app_name"
+      fi
+    fi
   done
 }
 

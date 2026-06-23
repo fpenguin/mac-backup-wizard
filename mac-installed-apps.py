@@ -5,8 +5,10 @@ from __future__ import annotations
 import argparse
 import csv
 import curses
+import json
 import os
 import plistlib
+import re
 import shutil
 import subprocess
 import sys
@@ -71,6 +73,8 @@ class InstalledApp:
     tags: list[str]
     updated_ts: float
     category: str = ""
+    mas_id: str = ""
+    cask: str = ""
 
     @property
     def size_human(self) -> str:
@@ -437,6 +441,8 @@ def write_apps(path: Path, apps: list[InstalledApp]) -> None:
                 "finder_tags",
                 "last_updated",
                 "category",
+                "mas_id",
+                "cask",
             ]
         )
         filtered = (app for app in apps if not is_backup_noise_app(app))
@@ -451,6 +457,8 @@ def write_apps(path: Path, apps: list[InstalledApp]) -> None:
                     app.tag_text,
                     app.updated_text,
                     app.category,
+                    app.mas_id,
+                    app.cask,
                 ]
             )
 
@@ -475,6 +483,8 @@ def load_apps_from_tsv(path: Path) -> list[InstalledApp]:
                     ],
                     updated_ts=parse_date(row.get("last_updated", "")),
                     category=clean_cell(row.get("category", "")).lower(),
+                    mas_id=clean_cell(row.get("mas_id", "")),
+                    cask=clean_cell(row.get("cask", "")),
                 )
             )
     return apps
@@ -1620,6 +1630,89 @@ def prompt_save_mode(existing_count: int) -> str:
     return "merge"
 
 
+def _parse_mas_list(text: str) -> dict[str, str]:
+    """Map a compact app-name key -> App Store id, from `mas list` output."""
+    mapping: dict[str, str] = {}
+    for line in text.splitlines():
+        match = re.match(r"\s*(\d+)\s+(.*\S)", line)
+        if not match:
+            continue
+        name = re.sub(r"\s*\([^)]*\)\s*$", "", match.group(2)).strip()
+        key = compact_key(name)
+        if key:
+            mapping.setdefault(key, match.group(1))
+    return mapping
+
+
+def _parse_brew_casks(text: str) -> dict[str, str]:
+    """Map a compact app-name key -> cask token, from `brew info --json=v2`."""
+    mapping: dict[str, str] = {}
+    try:
+        data = json.loads(text or "{}")
+    except json.JSONDecodeError:
+        return mapping
+    for cask in data.get("casks", []) or []:
+        token = clean_cell(cask.get("token", ""))
+        if not token:
+            continue
+        for artifact in cask.get("artifacts", []) or []:
+            names: list = []
+            if isinstance(artifact, dict):
+                names = artifact.get("app", []) or []
+            elif isinstance(artifact, list):
+                names = artifact
+            for app_name in names:
+                if isinstance(app_name, str) and app_name.endswith(".app"):
+                    key = compact_key(app_name[:-4])
+                    if key:
+                        mapping.setdefault(key, token)
+        mapping.setdefault(compact_key(token), token)
+    return mapping
+
+
+def _command_output(command: list[str], timeout: int) -> str:
+    try:
+        result = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            timeout=timeout,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+    return result.stdout or ""
+
+
+def mas_id_map() -> dict[str, str]:
+    exe = find_executable("mas")
+    return _parse_mas_list(_command_output([exe, "list"], 30)) if exe else {}
+
+
+def cask_app_map() -> dict[str, str]:
+    exe = find_executable("brew")
+    if not exe:
+        return {}
+    return _parse_brew_casks(_command_output([exe, "info", "--json=v2", "--installed"], 120))
+
+
+def resolve_install_sources(apps: list[InstalledApp]) -> None:
+    """Fill mas_id / cask on each app from Homebrew cask metadata and `mas list`,
+    so option 3 can bulk-install apps that aren't in the curated catalog. Only
+    fills blanks; never overwrites values already present (e.g. merged rows)."""
+    casks = cask_app_map()
+    mas = mas_id_map()
+    if not casks and not mas:
+        return
+    for app in apps:
+        name_key = compact_key(app.name)
+        stem_key = compact_key(Path(app.path).stem) if app.path else ""
+        if not app.cask:
+            app.cask = casks.get(name_key) or (casks.get(stem_key, "") if stem_key else "")
+        if not app.mas_id:
+            app.mas_id = mas.get(name_key) or (mas.get(stem_key, "") if stem_key else "")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Define installed Mac apps and categories.")
     parser.add_argument("--output", required=True, help="TSV file to write.")
@@ -1655,6 +1748,7 @@ def main() -> int:
         categories,
     )
     apps = scan_apps(app_dirs, existing, seeds)
+    resolve_install_sources(apps)
 
     if args.check:
         categorized = sum(1 for app in apps if app.category)

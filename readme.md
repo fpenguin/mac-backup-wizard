@@ -57,6 +57,21 @@ from whatever is installed on the new Mac. So it offers **everything you backed
 up**, regardless of whether each app is installed yet — install the apps first
 (option `3`) or restore settings now and install later, in any order.
 
+## Installing apps on a new Mac
+
+Option `3` bulk-installs your defined apps. Each app resolves in this order:
+
+1. A curated entry in `mac-apps.tsv` (lets you pin a specific formula/cask/`mas` id).
+2. Otherwise, the `cask` / `mas_id` captured in the inventory at scan time —
+   option `1` fills these from your installed Homebrew casks (`brew`) and App
+   Store apps (`mas`), so apps you never added to the catalog still install.
+3. Anything still unresolved is listed for manual follow-up.
+
+So on the old Mac, run option `1` (it records each app's cask / App Store id);
+on the new Mac, option `3` installs the whole set via Homebrew and `mas` in one
+pass. Apps installed by drag-and-drop or a `.pkg` (no cask, not from the App
+Store) can't be auto-resolved — add a row to `mac-apps.tsv` for those.
+
 Option `8` lets you point the settings backup at iCloud Drive, Dropbox, OneDrive,
 Google Drive (auto-detected under `~/Library/CloudStorage`), or a custom path.
 
@@ -108,13 +123,15 @@ running the categorization:
 Installation does not sign you in. If authentication fails, run `codex login` or
 `claude` once in Terminal, then rerun the AI helper.
 
-- `mac-installed-apps.tsv`: scanned apps, Finder tags, app sizes, last-updated dates, user-assigned categories. Generated locally and git-ignored — see [Your data vs. the repo](#your-data-vs-the-repo).
+- `mac-installed-apps.tsv`: scanned apps, Finder tags, app sizes, last-updated dates, user-assigned categories, and — when detectable — each app's App Store id (`mas_id`) and Homebrew cask (`cask`). Generated locally and git-ignored — see [Your data vs. the repo](#your-data-vs-the-repo).
 - `mac-app-categories.tsv`: editable category list.
 
 The other menus use the same defined-app picker where possible:
 
 - Option `2` maps selected apps to matching rows in `mac-settings.tsv`.
-- Option `3` maps selected apps to install entries in `mac-apps.tsv`.
+- Option `3` maps selected apps to install entries in `mac-apps.tsv`; apps not in
+  that catalog fall back to the `cask` / `mas_id` captured in the inventory, so a
+  large app list can be bulk-installed (see [Installing apps on a new Mac](#installing-apps-on-a-new-mac)).
 - Option `4` maps selected apps to matching restore settings.
 - Options `6` and `7` map selected apps to Mackup-supported app IDs.
 

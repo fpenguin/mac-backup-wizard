@@ -285,6 +285,24 @@ done
   || bad "restore: dropped a backed-up item (count=$SETTING_COUNT)"
 rm -rf "$rdir"
 
+# --- install: an uncataloged app falls back to its inventory cask/mas id ---
+load_all_app_items
+reset_defined_apps
+DEFINED_APP_COUNT=1
+DEFINED_APP_NAME[1]="Ziggy Example"
+DEFINED_APP_PATH[1]="/Applications/Ziggy Example.app"
+DEFINED_APP_CATEGORY[1]="dev"
+DEFINED_APP_MAS[1]=""
+DEFINED_APP_CASK[1]="ziggy-example"
+SELECTED_DEFINED_APP_PATHS=("/Applications/Ziggy Example.app")
+select_install_items_for_defined_apps
+build_install_plan
+install_cask_found=0
+for c in "${BREW_CASKS[@]}"; do [[ "$c" == "ziggy-example" ]] && install_cask_found=1; done
+[[ "$install_cask_found" -eq 1 ]] \
+  && ok "install: uncataloged app falls back to inventory cask" \
+  || bad "install: inventory cask fallback (casks: ${BREW_CASKS[*]})"
+
 printf '\n'
 if [[ "$fails" -eq 0 ]]; then
   printf 'ALL BASH TESTS PASSED\n'

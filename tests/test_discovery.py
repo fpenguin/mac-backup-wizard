@@ -194,5 +194,53 @@ class AICategoryHelp(unittest.TestCase):
         self.assertFalse(mdap.is_backup_noise_app_name("Bitwarden"))
 
 
+class InstallSources(unittest.TestCase):
+    def _app(self, name, path, **kw):
+        return mia.InstalledApp(name=name, bundle_id=kw.get("bundle_id", ""), path=path,
+                                size_bytes=1, tags=[], updated_ts=0.0,
+                                category=kw.get("category", ""), mas_id=kw.get("mas_id", ""),
+                                cask=kw.get("cask", ""))
+
+    def test_parse_mas_list(self):
+        text = "497799835  Xcode (15.0)\n803453959  Slack for Desktop (4.2)\nnot a row\n"
+        m = mia._parse_mas_list(text)
+        self.assertEqual(m[mia.compact_key("Xcode")], "497799835")
+        self.assertEqual(m[mia.compact_key("Slack for Desktop")], "803453959")
+
+    def test_parse_brew_casks(self):
+        js = ('{"casks":[{"token":"google-chrome","artifacts":[{"app":["Google Chrome.app"]}]},'
+              '{"token":"iterm2","artifacts":[["iTerm.app"]]}]}')
+        m = mia._parse_brew_casks(js)
+        self.assertEqual(m[mia.compact_key("Google Chrome")], "google-chrome")
+        self.assertEqual(m[mia.compact_key("iTerm")], "iterm2")
+        self.assertEqual(m[mia.compact_key("iterm2")], "iterm2")  # token fallback
+
+    def test_resolve_fills_blanks_only(self):
+        new = self._app("Google Chrome", "/Applications/Google Chrome.app")
+        mas = self._app("Xcode", "/Applications/Xcode.app")
+        keep = self._app("Foo", "/Applications/Foo.app", cask="preset")
+        orig = (mia.cask_app_map, mia.mas_id_map)
+        mia.cask_app_map = lambda: {mia.compact_key("Google Chrome"): "google-chrome",
+                                    mia.compact_key("Foo"): "foo"}
+        mia.mas_id_map = lambda: {mia.compact_key("Xcode"): "497799835"}
+        try:
+            mia.resolve_install_sources([new, mas, keep])
+        finally:
+            mia.cask_app_map, mia.mas_id_map = orig
+        self.assertEqual(new.cask, "google-chrome")
+        self.assertEqual(mas.mas_id, "497799835")
+        self.assertEqual(keep.cask, "preset")  # pre-set value not overwritten
+
+    def test_write_load_roundtrip_install_cols(self):
+        app = self._app("Slack", "/Applications/Slack.app", category="work",
+                        mas_id="618783545", cask="slack")
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "apps.tsv"
+            mia.write_apps(p, [app])
+            loaded = {a.name: a for a in mia.load_apps_from_tsv(p)}
+            self.assertEqual(loaded["Slack"].cask, "slack")
+            self.assertEqual(loaded["Slack"].mas_id, "618783545")
+
+
 if __name__ == "__main__":
     unittest.main()
