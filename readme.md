@@ -102,7 +102,7 @@ running the categorization:
 Installation does not sign you in. If authentication fails, run `codex login` or
 `claude` once in Terminal, then rerun the AI helper.
 
-- `mac-installed-apps.tsv`: scanned apps, Finder tags, app sizes, last-updated dates, user-assigned categories.
+- `mac-installed-apps.tsv`: scanned apps, Finder tags, app sizes, last-updated dates, user-assigned categories. Generated locally and git-ignored — see [Your data vs. the repo](#your-data-vs-the-repo).
 - `mac-app-categories.tsv`: editable category list.
 
 The other menus use the same defined-app picker where possible:
@@ -150,14 +150,33 @@ Data (tracked):
 - `mac-apps.tsv`: install catalog.
 - `mac-settings.tsv`: curated settings overlay (merged into the scan).
 - `mac-app-categories.tsv`: editable category config.
-- `mac-installed-apps.tsv`: current app inventory (source of truth).
+- `mac-installed-apps.example.tsv`: sanitized example inventory (template only).
 
-Generated / machine-local (git-ignored): `mac-settings.generated.tsv`,
-`mac-settings.reviewed.tsv`, `mac-settings.candidates.tsv`,
-`mac-backup-location.conf`, `mac-mackup-apps.tsv`,
+Generated / machine-local (git-ignored): `mac-installed-apps.tsv` (your real
+inventory), `mac-settings.generated.tsv`, `mac-settings.reviewed.tsv`,
+`mac-settings.candidates.tsv`, `mac-backup-location.conf`, `mac-mackup-apps.tsv`,
 `mac-ai-last-response.txt`.
 
 `tests/`: see [Tests](#tests).
+
+## Your data vs. the repo
+
+The repo ships a **sanitized example** inventory (`mac-installed-apps.example.tsv`)
+so you can read the format and try the tool. Your **real** inventory lives in
+`mac-installed-apps.tsv`, which is **git-ignored** — it is created the first time
+you run option `1`, and it never shows up in `git status` or gets pushed.
+
+This means you can use a single clone for both developing the tool and backing up
+your own Mac:
+
+- Option `1` always reads/writes your real `mac-installed-apps.tsv`.
+- All other flows use your real inventory when it exists, and fall back to the
+  example only when it doesn't (e.g. a fresh clone you haven't scanned yet).
+- The same pattern already applies to other personal/runtime files
+  (`mac-settings.generated.tsv`, `mac-backup-location.conf`, etc.).
+
+So: clone, run option `1`, and your data stays local — nothing personal is ever
+committed.
 
 ## Backup Location
 

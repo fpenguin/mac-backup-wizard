@@ -219,11 +219,13 @@ printf '/tmp/Custom/Backup\n' >"$cfg"
 ) && ok "resolve_backup_root: saved config" || bad "resolve_backup_root: saved config"
 rm -f "$cfg"
 
-# --- bundle-id settings matching (uses the live catalog + scanner) ---
-if command -v python3 >/dev/null 2>&1 && [[ -f mac-installed-apps.tsv ]]; then
+# --- bundle-id settings matching (uses the shipped example catalog + scanner) ---
+APPS_FIXTURE="mac-installed-apps.example.tsv"
+if command -v python3 >/dev/null 2>&1 && [[ -f "$APPS_FIXTURE" ]]; then
   gen="$(mktemp)"
-  if python3 mac-settings-scan.py --apps mac-installed-apps.tsv --skip-containers --output "$gen" >/dev/null 2>&1; then
+  if python3 mac-settings-scan.py --apps "$APPS_FIXTURE" --skip-containers --output "$gen" >/dev/null 2>&1; then
     SETTINGS_GENERATED="$gen" load_settings_items
+    INSTALLED_APPS_CATALOG="$APPS_FIXTURE"
     load_defined_apps
     SELECTED_DEFINED_APP_PATHS=()
     target_bundle=""
@@ -243,18 +245,24 @@ if command -v python3 >/dev/null 2>&1 && [[ -f mac-installed-apps.tsv ]]; then
         # every selected row must either carry the target bundle or have no bundle
         [[ "${SETTING_BUNDLE_ID[i]}" == "$target_bundle" || -z "${SETTING_BUNDLE_ID[i]}" ]] || wrong=1
       done
-      [[ "$selected" -ge 1 && "$wrong" -eq 0 ]] \
-        && ok "bundle match: selects only the chosen app's rows ($selected)" \
-        || bad "bundle match (selected=$selected wrong=$wrong)"
+      if ((selected >= 1)); then
+        [[ "$wrong" -eq 0 ]] \
+          && ok "bundle match: selects only the chosen app's rows ($selected)" \
+          || bad "bundle match (selected=$selected wrong=$wrong)"
+      else
+        # Karabiner-Elements is in the example catalog but its settings may not
+        # exist on this machine; the key assertion (no false matches) still holds.
+        ok "bundle match: no Karabiner-Elements settings on this machine (no false matches)"
+      fi
     else
-      ok "bundle match: skipped (Karabiner-Elements not installed)"
+      ok "bundle match: skipped (Karabiner-Elements not in example catalog)"
     fi
     rm -f "$gen"
   else
     ok "bundle match: skipped (scan unavailable)"
   fi
 else
-  ok "bundle match: skipped (no python3 / catalog)"
+  ok "bundle match: skipped (no python3 / example catalog)"
 fi
 
 printf '\n'

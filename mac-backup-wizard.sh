@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Mac Backup Wizard — OpenBoot-style setup/backup wizard.
-# Version: 1.0
+# Version: 1.2
 
 set -o pipefail
 
@@ -12,6 +12,12 @@ SETTINGS_GENERATED="${SETTINGS_GENERATED:-$SCRIPT_DIR/mac-settings.generated.tsv
 SETTINGS_REVIEWED="${SETTINGS_REVIEWED:-$SCRIPT_DIR/mac-settings.reviewed.tsv}"
 SETTINGS_CANDIDATES="${SETTINGS_CANDIDATES:-$SCRIPT_DIR/mac-settings.candidates.tsv}"
 INSTALLED_APPS_CATALOG="${INSTALLED_APPS_CATALOG:-$SCRIPT_DIR/mac-installed-apps.tsv}"
+# Your real inventory (mac-installed-apps.tsv) is git-ignored; the repo ships a
+# sanitized mac-installed-apps.example.tsv. Option 1 always writes the real file
+# (INSTALLED_APPS_REAL); read-only flows fall back to the example via
+# resolve_installed_apps_paths (called from main).
+INSTALLED_APPS_EXAMPLE="${INSTALLED_APPS_EXAMPLE:-$SCRIPT_DIR/mac-installed-apps.example.tsv}"
+INSTALLED_APPS_REAL="$INSTALLED_APPS_CATALOG"
 APP_CATEGORY_FILE="${APP_CATEGORY_FILE:-$SCRIPT_DIR/mac-app-categories.tsv}"
 MACKUP_SELECTION_FILE="${MACKUP_SELECTION_FILE:-$SCRIPT_DIR/mac-mackup-apps.tsv}"
 MACKUP_CONFIG="${MACKUP_CONFIG:-$HOME/.mackup.cfg}"
@@ -1227,7 +1233,7 @@ define_apps_to_backup_flow() {
   fi
 
   header "Define Apps to Backup"
-  printf 'Installed-app list: %s\n' "$INSTALLED_APPS_CATALOG"
+  printf 'Installed-app list: %s\n' "$INSTALLED_APPS_REAL"
   printf 'Categories:         %s\n' "$APP_CATEGORY_FILE"
   if $INCLUDE_SYSTEM_APPS; then
     scan_args+=(--include-system)
@@ -1241,13 +1247,13 @@ define_apps_to_backup_flow() {
       preview_file="$(mktemp)"
       printf 'DRY RUN: opening the editor as a preview only.\n'
       printf 'Changes you make here will be discarded. Run without --dry-run to save to:\n'
-      printf '  %s\n\n' "$INSTALLED_APPS_CATALOG"
+      printf '  %s\n\n' "$INSTALLED_APPS_REAL"
 
       if python3 "$picker" \
         --output "$preview_file" \
         --categories "$APP_CATEGORY_FILE" \
         --seed-app-catalog "$APP_CATALOG" \
-        --merge-base "$INSTALLED_APPS_CATALOG" \
+        --merge-base "$INSTALLED_APPS_REAL" \
         --save-mode merge \
         "${scan_args[@]}"; then
         printf '\nDRY RUN: preview saved to a temporary file and discarded.\n'
@@ -1258,7 +1264,7 @@ define_apps_to_backup_flow() {
       rm -f "$preview_file"
     else
       python3 "$picker" \
-        --output "$INSTALLED_APPS_CATALOG" \
+        --output "$INSTALLED_APPS_REAL" \
         --categories "$APP_CATEGORY_FILE" \
         --seed-app-catalog "$APP_CATALOG" \
         "${scan_args[@]}" \
@@ -1270,7 +1276,7 @@ define_apps_to_backup_flow() {
   fi
 
   if python3 "$picker" \
-    --output "$INSTALLED_APPS_CATALOG" \
+    --output "$INSTALLED_APPS_REAL" \
     --categories "$APP_CATEGORY_FILE" \
     --seed-app-catalog "$APP_CATALOG" \
     "${scan_args[@]}"; then
@@ -2998,8 +3004,18 @@ EOF
   done
 }
 
+resolve_installed_apps_paths() {
+  # Option 1 always writes/merges the real (git-ignored) inventory.
+  INSTALLED_APPS_REAL="$INSTALLED_APPS_CATALOG"
+  # Read-only flows fall back to the shipped example when no real inventory exists.
+  if [[ ! -f "$INSTALLED_APPS_CATALOG" && -f "$INSTALLED_APPS_EXAMPLE" ]]; then
+    INSTALLED_APPS_CATALOG="$INSTALLED_APPS_EXAMPLE"
+  fi
+}
+
 main() {
   parse_args "$@"
+  resolve_installed_apps_paths
   resolve_backup_root
   init_colors
   main_menu

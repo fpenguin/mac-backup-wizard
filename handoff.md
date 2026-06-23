@@ -79,11 +79,16 @@ Maintenance:  8 Change backup location   9 Remove settings backups
 Scripts: `mac-backup-wizard.sh`, `mac-installed-apps.py`, `mac-defined-app-picker.py`,
 `mac-settings-scan.py`, `mac-settings-picker.py`.
 Tracked data: `mac-apps.tsv`, `mac-settings.tsv`, `mac-app-categories.tsv`,
-`mac-installed-apps.tsv`.
-Git-ignored (machine-local): `mac-settings.generated.tsv`,
-`mac-settings.reviewed.tsv`, `mac-settings.candidates.tsv`,
-`mac-backup-location.conf`, `mac-mackup-apps.tsv`,
+`mac-installed-apps.example.tsv` (sanitized template).
+Git-ignored (machine-local): `mac-installed-apps.tsv` (your real inventory,
+written by option 1), `mac-settings.generated.tsv`, `mac-settings.reviewed.tsv`,
+`mac-settings.candidates.tsv`, `mac-backup-location.conf`, `mac-mackup-apps.tsv`,
 `mac-ai-last-response.txt`.
+
+The real inventory is resolved at startup (`resolve_installed_apps_paths`):
+option 1 always writes the real `mac-installed-apps.tsv` (`INSTALLED_APPS_REAL`);
+read-only flows use it when present and fall back to the example otherwise
+(`INSTALLED_APPS_CATALOG`).
 
 The legacy standalone scripts and the old category-driven picker have been
 removed; `spec-settings-discovery.md` records the design and decisions.
